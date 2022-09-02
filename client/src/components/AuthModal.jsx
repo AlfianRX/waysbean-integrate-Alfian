@@ -1,13 +1,13 @@
-import { React, useContext, useEffect, useState } from 'react'
+import { React, useContext, useState } from 'react'
 import { UserContext } from '../context/userContext';
 import { useMutation } from 'react-query';
 import { API } from '../config/api';
-
 
 function AuthModal() {
 
   const [, dispatch] = useContext(UserContext)
   const [message, setMessage] = useState(null)
+  
 
   //. Login 
   const [formLogin, setFormLogin] = useState({
@@ -24,7 +24,7 @@ function AuthModal() {
 
   const { loginEmail, loginPassword } = formLogin;
 
-  const handleSubmitLogin = useMutation( async (e) => {
+  const handleSubmitLogin = useMutation(async (e) => {
     try {
       const closeModal = document.getElementById('closeModal')
 
@@ -33,7 +33,7 @@ function AuthModal() {
       const config = {
         headers: {
           'Content-type': 'application/json',
-        }
+        },
       };
 
       const body = JSON.stringify(formLogin);
@@ -76,32 +76,33 @@ function AuthModal() {
     });
   };
 
-  const { registerName, registerEmail, registerPassword } = formRegister;
+  const { registerName, registerEmail, registerPassword } = formRegister
 
-  const handleSubmitRegister = useMutation (async (e) => {
+  const handleSubmitRegister = useMutation(async (e) => {
     try {
       const toggleModal = document.getElementById("toggleModal")
 
       e.preventDefault();
 
-    const config = {
-      headers: {
-        'Content-type': 'application/json',
-      },
-    };
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      };
 
-    const body = JSON.stringify(formRegister);
-    const response = await API.post('/register', body, config);
+      const body = JSON.stringify(formRegister);
+      const response = await API.post('/register', body, config);
 
-    console.log(response)
+      console.log(response)
 
-    toggleModal.click()
+      toggleModal.click()
 
-    setFormRegister({
-      registerName: '',
-      registerEmail: '',
-      registerPassword: '',
-    })
+      setFormRegister({
+        registerName: '',
+        registerEmail: '',
+        registerPassword: '',
+      })
+
 
     } catch (error) {
       const alert = (
@@ -115,6 +116,7 @@ function AuthModal() {
   })
 
 
+
   return (
     <div>
       <div className="modal fade" id="login" aria-hidden="true" aria-labelledby="loginLabel" tabIndex="-1">
@@ -122,8 +124,8 @@ function AuthModal() {
           <div className="modal-content">
             <div className="modal-body">
               <div data-bs-dismiss="modal" id='closeModal'></div>
-              {message && message}
               <h1 className="modal-title text-red bold mb-4" id="login">Login</h1>
+              {message && message}
 
               <form onSubmit={(e) => handleSubmitLogin.mutate(e)}>
                 <div className="mb-3">
@@ -151,20 +153,20 @@ function AuthModal() {
 
               <form id="register" onSubmit={(e) => handleSubmitRegister.mutate(e)} >
                 <div className="mb-3">
-                  <input type="text" onChange={handleChangeRegister} className="form-control input-red" id="registerName" name="registerName" value={registerName} placeholder="Full Name" />
+                  <input type="text" onChange={handleChangeRegister} className="form-control input-red" id="registerName" value={registerName} name="registerName" placeholder="Full Name" />
                 </div>
                 <div className="mb-3">
-                  <input type="email" onChange={handleChangeRegister} className="form-control input-red" id="registerEmail" name="registerEmail" value={registerEmail} placeholder="Email" />
+                  <input type="email" onChange={handleChangeRegister} className="form-control input-red" id="registerEmail" value={registerEmail} name="registerEmail" placeholder="Email" />
                 </div>
                 <div className="mb-3">
-                  <input type="password" onChange={handleChangeRegister} className="form-control input-red" id="registerPassword" name="registerPassword" value={registerPassword} placeholder="Password" />
+                  <input type="password" onChange={handleChangeRegister} className="form-control input-red" id="registerPassword" value={registerPassword} name="registerPassword" placeholder="Password" />
                 </div>
                 <div className="d-grid gap-2 mb-3">
-                  <button className="btn btn-red" type="button">Register</button>
+                  <button className="btn btn-red">Register</button>
                 </div>
               </form>
 
-              <p className="text-center">Already have an account? Click <strong className="cursor-pointer" data-bs-target="#login" data-bs-toggle="modal">Here</strong></p>
+              <p className="text-center">Already have an account? Click <strong id='toggleModal' className="cursor-pointer" data-bs-target="#login" data-bs-toggle="modal">Here</strong></p>
             </div>
           </div>
         </div>

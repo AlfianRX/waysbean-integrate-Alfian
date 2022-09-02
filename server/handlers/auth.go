@@ -76,6 +76,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 	profile := models.Profile{
 		UserID: data.ID,
 	}
+
 	//. create nil profile column
 	h.AuthRepository.CreateNilProfile(profile)
 

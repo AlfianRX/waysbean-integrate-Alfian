@@ -23,7 +23,7 @@ const reducer = (state, action) => {
       localStorage.removeItem("token");
       return {
         isLogin: false,
-        user: [{}],
+        user: {},
       };
     default:
       throw new Error();

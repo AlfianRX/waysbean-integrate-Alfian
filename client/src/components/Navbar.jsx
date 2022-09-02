@@ -1,5 +1,5 @@
 import { React, useContext } from "react"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { UserContext } from "../context/userContext"
 
@@ -13,6 +13,8 @@ import { API } from "../config/api"
 
 function Navbar() {
 
+  
+
   const [state, dispatch] = useContext(UserContext);
 
   let { data: cartData } = useQuery('cartUserIdCache', async () => {
@@ -25,17 +27,21 @@ function Navbar() {
   });
 
   const isLogin = state.isLogin
-  const isAdmin = state.user.status === 'admin' ? true : false
+  const isAdmin = state.user.status === 'admin' ? true : false;
+
+  let navi = useNavigate()
 
   const logout = () => {
+    console.log(state)
     dispatch({
-      type: 'LOGOUT'
+        type: "LOGOUT"
     })
-  }
+    navi("/")
+}
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg bg-white fixed-top">
+      <nav className="navbar navbar-expand-lg bg-white fixed-top shadow">
         <div className="container-lg">
           <Link className="navbar-brand me-5" to="/">
             <img src={logo} style={{ height: 60 }} alt="logo" />

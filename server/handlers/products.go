@@ -79,9 +79,12 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	filepath := dataContex.(string)
 
 	price, _ := strconv.Atoi(r.FormValue("price"))
+	stock, _ := strconv.Atoi(r.FormValue("stock"))
 	request := productsdto.CreateProductRequest{
 		Title: r.FormValue("title"),
 		Price: price,
+		Desc:  r.FormValue("desc"),
+		Stock: stock,
 		Image: filepath,
 	}
 

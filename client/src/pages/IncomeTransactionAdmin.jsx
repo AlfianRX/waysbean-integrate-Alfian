@@ -31,7 +31,7 @@ function IncomeTransactionAdmin() {
       </div>
 
 
-      <div style={{ marginTop: 90, width: '90%' }}>
+      <div style={{ marginTop: 120, width: '90%' }}>
 
         <h3 className='text-red mb-4'>Income Transaction</h3>
 

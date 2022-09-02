@@ -11,7 +11,7 @@ function Profile() {
   return (
     <div className='container d-flex justify-content-center'>
       <Navbar />
-      <div className='row' style={{ marginTop: 90, width: '90%' }}>
+      <div className='row' style={{ marginTop: 120, width: '90%' }}>
         <div className='col-5'>
           <h3 className='text-red mb-4'>My Profile</h3>
           <div className='row'>
