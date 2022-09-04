@@ -5,25 +5,26 @@ import (
 )
 
 type Transaction struct {
-	ID        int       `json:"id" gorm:"primary_key:auto_increment"`
-	Amount    int       `json:"amount"`
+	ID        int64     `json:"id"`
+	UserID    int       `json:"user_id"`
+	User      User      `json:"user"`
 	Status    string    `json:"status"`
-	BuyerID   int       `json:"buyer_id"`
-	Buyer     User      `json:"buyer"`
-	Carts     []Cart    `json:"cart"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Total     int       `json:"total"`
+	CartID    []int     `json:"cart_id" gorm:"-"`
+	Cart      []Cart    `json:"product" gorm:"many2many:transaction_cart;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	CreatedAt time.Time `json:"created_at" gorm:"-"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"-"`
 }
 
 type TransactionCartRel struct {
-	ID     int `json:"id"`
-	UserId int `json:"user_id"`
-	Amount int `json:"amount"`
+	ID     int64 `json:"id"`
+	UserId int   `json:"user_id"`
+	Amount int   `json:"amount"`
 }
 
 type TransactionUserRel struct {
-	ID     int `json:"id"`
-	UserId int `json:"user_id"`
+	ID     int64 `json:"id"`
+	UserId int   `json:"user_id"`
 }
 
 func (TransactionCartRel) TableName() string {

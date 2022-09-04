@@ -49,7 +49,7 @@ function Home() {
         </div>
       </header>
       <main className='mx-auto text-red' style={{ width: '92%' }}>
-        <h4 className='mb-5'>Let's Order</h4>
+        <h4 className='mb-5'>The Real Smell of Coffee</h4>
         <div className='row'>
           {products?.map((item) => {
             return (

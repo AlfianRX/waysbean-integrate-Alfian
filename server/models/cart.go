@@ -9,9 +9,10 @@ type Cart struct {
 	UserID        int                `json:"user_id"`
 	User          UserProfileRel     `json:"user"`
 	ProductID     int                `json:"prouduct_id"`
-	Product       ProductCartRel     `json:"product"`
+	Product       ProductCartRel     `json:"product" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	TransactionID *int               `json:"transaction_id"`
 	Transaction   TransactionCartRel `json:"-"`
+	Status        string             `json:"status"`
 	CreatedAt     time.Time          `json:"-"`
 	UpdatedAt     time.Time          `json:"updated_at"`
 }

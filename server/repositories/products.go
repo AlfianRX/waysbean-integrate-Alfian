@@ -9,8 +9,9 @@ import (
 type ProductRepository interface {
 	FindProducts() ([]models.Product, error)
 	GetProduct(ID int) (models.Product, error)
+	GetProductImage(ID int) (models.Product, error)
 	CreateProduct(models.Product) (models.Product, error)
-	UpdateProduct(models.Product) (models.Product, error)
+	UpdateProduct(product models.Product, ID int) (models.Product, error)
 	DeleteProduct(models.Product) (models.Product, error)
 }
 
@@ -33,13 +34,21 @@ func (r *repository) GetProduct(ID int) (models.Product, error) {
 	return product, err
 }
 
+func (r *repository) GetProductImage(ID int) (models.Product, error) {
+	var product models.Product
+
+	err := r.db.First(&product, ID).Error
+
+	return product, err
+}
+
 func (r *repository) CreateProduct(product models.Product) (models.Product, error) {
 	err := r.db.Create(&product).Error
 
 	return product, err
 }
 
-func (r *repository) UpdateProduct(product models.Product) (models.Product, error) {
+func (r *repository) UpdateProduct(product models.Product, ID int) (models.Product, error) {
 	err := r.db.Save(&product).Error
 
 	return product, err

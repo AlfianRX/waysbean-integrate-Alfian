@@ -5,7 +5,6 @@ import { UserContext } from "../context/userContext"
 
 import logo from "../assets/img/waysbean_logo.png"
 import iconCart from "./../assets/img/cart_icon.png"
-import userIcon from "./../assets/img/user_icon.png"
 import logoutIcon from "./../assets/img/logout_icon.png"
 import { useQuery } from "react-query"
 import { API } from "../config/api"
@@ -62,12 +61,12 @@ function Navbar() {
                       <div className="menu-drop" style={{ width: 300 }}>
                         <div>
                           <Link to='/add-product' className="d-flex align-items-center p-3">
-                            <img src={userIcon} alt="profile icon" />
+                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662198073/waysbean/Vector_4_dxi5vi.png'} alt="profile icon" />
                             <p className="ms-3">Add Product</p>
                           </Link>
-                          <Link to='/add-toping' className="d-flex align-items-center p-3">
-                            <img src={userIcon} alt="profile icon" />
-                            <p className="ms-3">Add Topping</p>
+                          <Link to='/product-list' className="d-flex align-items-center p-3">
+                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662198073/waysbean/Vector_4_dxi5vi.png'} alt="profile icon" />
+                            <p className="ms-3">List Product</p>
                           </Link>
                         </div>
 
@@ -97,7 +96,7 @@ function Navbar() {
                         <div className="menu-drop">
                           <div>
                             <Link to='/profile' className="d-flex align-items-center p-3">
-                              <img src={userIcon} alt="profile icon" />
+                              <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662198147/waysbean/user_2_jivazq.png'} alt="profile icon" />
                               <p className="ms-3">Profile</p>
                             </Link>
                           </div>

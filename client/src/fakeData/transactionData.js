@@ -1,5 +1,3 @@
-import palmSugar from './../assets/img/palm-sugar.jpg'
-import greenTea from './../assets/img/green-tea.jpg'
 import rwanda from "../assets/img/kopi_rwanda.png"
 import ethiopia from "../assets/img/kopi_ethiopia.png"
 import guetemala from "../assets/img/kopi_guetemala.png"

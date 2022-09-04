@@ -26,6 +26,7 @@ a{
 
 .text-red{
   color: var(--color-pri) !important;
+  font-family: 'Cabin', sans-serif;
 }
 .text-brown{
   color: rgba(97, 61, 43, 1) !important;
@@ -263,4 +264,50 @@ div.thanks-message{
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+
+.btnIncDec{
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #613D2B;
+  background-color: transparent;
+  border: none;
+}
+
+.btnIncDec:active{
+  width: 18px;
+  height: 18px;
+}
+
+.IncDec{
+  height: 25px;
+  min-width: 25px;
+  background-color: #F6E6DA;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #613D2B;
+  font-weight: 700;
+}
+
+.trash:active{
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.trash:hover{
+  cursor: pointer;
+}
+
+.tothe-left{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

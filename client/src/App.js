@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { API, setAuthToken } from "./config/api";
 import { PrivateRoute } from './components'
 import { UserContext } from "./context/userContext";
-import { Home, AddProductAdmin, AddTopingAdmin, Cart, DetailProduct, IncomeTransactionAdmin, Profile } from './pages'
+import { Home, AddProductAdmin, ProductList, UpdateProduct, Cart, DetailProduct, IncomeTransactionAdmin, Profile } from './pages'
 
 function App() {
 
@@ -50,7 +50,8 @@ function App() {
         <Route path="/" element={ isLogin ? (isAdmin ? <IncomeTransactionAdmin/> : <Home />) : <Home/>} />
         <Route exact path="/" element={<PrivateRoute />}>
           <Route path="/add-product" element={<AddProductAdmin />} />
-          <Route path="/add-toping" element={<AddTopingAdmin />} />
+          <Route path="/product-list" element={<ProductList />} />
+          <Route path="/product-update/:id" element={<UpdateProduct />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/detail-product/:id" element={<DetailProduct />} />
           <Route path="/profile" element={<Profile />} />

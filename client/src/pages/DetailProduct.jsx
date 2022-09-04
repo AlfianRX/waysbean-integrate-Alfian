@@ -18,7 +18,7 @@ function DetailProduct() {
   const [getProduct, setGetProduct] = useState({})
   const { id } = useParams()
   const getDetailProduct = async () => {
-    const response = await API.get(`/product/${id}`)
+    const response = await API.get("/product/" + id)
     setGetProduct(response.data.data)
   }
 
@@ -39,6 +39,7 @@ function DetailProduct() {
     let dataCart = {
       product_id : getProduct?.id,
       subtotal : getProduct?.price,
+      qty: 1,
       user_id : user_id,
     }
 

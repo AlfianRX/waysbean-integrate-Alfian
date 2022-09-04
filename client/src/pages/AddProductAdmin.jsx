@@ -81,7 +81,7 @@ function AddProductAdmin() {
           <input className="form-control input-red mb-4" type="text" name='title' onChange={handleChange} placeholder={`Name Product`} aria-label="default input example" />
           <input className="form-control input-red mb-4" type="number" name='stock' placeholder="Stock" onChange={handleChange} aria-label="default input example" />
           <input className="form-control input-red mb-4" type="number" name='price' placeholder="Price" onChange={handleChange} aria-label="default input example" />
-          <input className="form-control input-red mb-4" type="text" name='desc' placeholder="Desc" onChange={handleChange} aria-label="default input example" />
+          <textarea className="form-control input-red mb-4" type="text" name='desc' placeholder="Desc" onChange={handleChange} aria-label="default input example" />
           <div className="mb-5">
             <input type="file" name='image' className="form-control input-file-red" id="inputGroupFile02" onChange={handleChange}/>
             <label className="form-control label-file" htmlFor="inputGroupFile02">

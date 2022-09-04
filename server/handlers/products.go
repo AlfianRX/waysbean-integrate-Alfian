@@ -68,6 +68,24 @@ func (h *handlerProduct) GetProduct(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (h *handlerProduct) GetProductImage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	product, err := h.ProductRepository.GetProductImage(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: convertProductsResponse(product)}
+	json.NewEncoder(w).Encode(response)
+}
+
 func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -135,33 +153,34 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 
-	dataContex := r.Context().Value("dataFile")
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	dataContex := r.Context().Value("dataFile") // add this code
+
 	filepath := dataContex.(string)
 
 	price, _ := strconv.Atoi(r.FormValue("price"))
 	stock, _ := strconv.Atoi(r.FormValue("stock"))
 	request := productsdto.UpdateProductRequest{
 		Title: r.FormValue("title"),
-		Price: price,
 		Desc:  r.FormValue("desc"),
+		Price: price,
 		Stock: stock,
 		Image: filepath,
+		// UserID: userId,
 	}
 
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	product, err := h.ProductRepository.GetProduct(id)
-
+	validation := validator.New()
+	err := validation.Struct(request)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	// Declare Context Background, Cloud Name, API Key, API Secret ...
 	var ctx = context.Background()
 	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
 	var API_KEY = os.Getenv("API_KEY")
@@ -171,33 +190,35 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
 	// Upload file to Cloudinary ...
-	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "waysbuck-911"})
+	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "waysbean"})
 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	if len(request.Title) > 0 {
+	product, _ := h.ProductRepository.GetProduct(int(id))
+
+	if (request.Title) != "" {
 		product.Title = request.Title
 	}
 
-	if request.Price > 0 {
+	if request.Price != 0 {
 		product.Price = request.Price
 	}
 
-	if len(request.Desc) > 0 {
-		product.Desc = request.Desc
-	}
-
-	if request.Stock > 0 {
-		product.Stock = request.Stock
-	}
-
-	if len(request.Image) > 0 {
+	if filepath != "false" {
 		product.Image = resp.SecureURL
 	}
 
-	data, err := h.ProductRepository.UpdateProduct(product)
+	if request.Stock != 0 {
+		product.Stock = request.Stock
+	}
+
+	if (request.Desc) != "" {
+		product.Desc = request.Desc
+	}
+
+	data, err := h.ProductRepository.UpdateProduct(product, id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
@@ -208,6 +229,7 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: http.StatusOK, Data: convertProductsResponse(data)}
 	json.NewEncoder(w).Encode(response)
+
 }
 
 func (h *handlerProduct) DeleteProduct(w http.ResponseWriter, r *http.Request) {

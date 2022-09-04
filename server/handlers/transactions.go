@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"math/rand"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 	dto "waysbean_fian/dto/result"
 	transactionsdto "waysbean_fian/dto/transactions"
 	"waysbean_fian/models"
@@ -13,7 +14,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/gorilla/mux"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/snap"
 )
@@ -60,7 +60,7 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-
+	fmt.Println(request)
 	validation := validator.New()
 	err := validation.Struct(request)
 	if err != nil {
@@ -70,21 +70,24 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	var TransIdIsMatch = false
-	var TransactionId int
-	for !TransIdIsMatch {
-		TransactionId = userId + rand.Intn(10000) - rand.Intn(100)
-		transactionData, _ := h.TransactionRepository.GetTransaction(TransactionId)
-		if transactionData.ID == 0 {
-			TransIdIsMatch = true
-		}
-	}
+	// var TransIdIsMatch = false
+	// var TransactionId int
+	// for !TransIdIsMatch {
+	// 	TransactionId = userId + rand.Intn(10000) - rand.Intn(100)
+	// 	transactionData, _ := h.TransactionRepository.GetTransaction(TransactionId)
+	// 	if transactionData.ID == 0 {
+	// 		TransIdIsMatch = true
+	// 	}
+	// }
+
+	time := time.Now()
+	miliTime := time.Unix()
 
 	transaction := models.Transaction{
-		ID:      TransactionId,
-		Amount:  request.Amount,
-		Status:  "Waiting Approve",
-		BuyerID: userId,
+		ID:     miliTime,
+		Total:  request.Total,
+		Status: "Waiting Approve",
+		UserID: userId,
 	}
 
 	newTransaction, err := h.TransactionRepository.CreateTransaction(transaction)
@@ -102,8 +105,8 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 
 func (h *handlerTransaction) GetSnap(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	id := int(userInfo["id"].(float64))
 
 	dataTransactions, err := h.TransactionRepository.GetTransaction(id)
 	if err != nil {
@@ -120,15 +123,15 @@ func (h *handlerTransaction) GetSnap(w http.ResponseWriter, r *http.Request) {
 	// 2. Initiate Snap request param
 	req := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  strconv.Itoa(dataTransactions.ID),
-			GrossAmt: int64(dataTransactions.Amount),
+			OrderID:  strconv.Itoa(int(dataTransactions.ID)),
+			GrossAmt: int64(dataTransactions.Total),
 		},
 		CreditCard: &snap.CreditCardDetails{
 			Secure: true,
 		},
 		CustomerDetail: &midtrans.CustomerDetails{
-			FName: dataTransactions.Buyer.FullName,
-			Email: dataTransactions.Buyer.Email,
+			FName: dataTransactions.User.FullName,
+			Email: dataTransactions.User.Email,
 		},
 	}
 
@@ -185,8 +188,8 @@ func (h *handlerTransaction) Notification(w http.ResponseWriter, r *http.Request
 func convertTransactionResponse(u models.Transaction) transactionsdto.TransactionResponse {
 	return transactionsdto.TransactionResponse{
 		ID:     u.ID,
-		Amount: u.Amount,
+		Total:  u.Total,
 		Status: u.Status,
-		UserID: u.BuyerID,
+		UserID: u.UserID,
 	}
 }

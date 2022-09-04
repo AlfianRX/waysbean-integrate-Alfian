@@ -1,34 +1,39 @@
 import React from 'react'
 import convertRupiah from 'rupiah-format'
-
-import transactionData from './../fakeData/transactionData'
+import { API } from '../config/api'
+import { useQuery } from 'react-query'
 import { Navbar, TransactionCard } from '../components'
-
-import incomeTransactionData from './../fakeData/incomeTransactionData'
 
 
 function IncomeTransactionAdmin() {
+
+  let { data: transactions } = useQuery('transactionCache', async () => {
+    const response = await API.get('/transactions')
+    return response.data.data
+  });
+
   return (
     <div className='container d-flex justify-content-center'>
 
       <Navbar />
+      {transactions?.map((item) => (
+        <div key={item.id} className="modal fade position-absolute" id={`transactionModal${item.id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered position-relative">
+            <div className="modal-content position-relative">
 
-      <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
+              <TransactionCard
+                key={item.id}
+                id={item?.id}
+                date={item?.updated_at}
+                status={item?.status}
+                subTotal={item?.amount}
+                cart={item?.cart}
+              />
 
-            <TransactionCard
-              id={transactionData[0].id}
-              day={transactionData[0].day}
-              date={transactionData[0].date}
-              status={transactionData[0].status}
-              subTotal={transactionData[0].subTotal}
-              product={transactionData[0].product}
-            />
-
+            </div>
           </div>
         </div>
-      </div>
+      ))}
 
 
       <div style={{ marginTop: 120, width: '90%' }}>
@@ -42,24 +47,24 @@ function IncomeTransactionAdmin() {
               <th>Name</th>
               <th>Address</th>
               <th>Post Code</th>
-              <th>Income</th>
+              <th>Products Order</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {incomeTransactionData.map((item, index) => {
+            {transactions?.map((item, index) => {
               return (
                 <tr className='cursor-pointer' data-bs-toggle="modal" data-bs-target="#transactionModal" key={item.id}>
                   <td>{index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>{item.address}</td>
-                  <td>{item.postCode}</td>
-                  <td className='text-primary'>{convertRupiah.convert(item.income)}</td>
-                  <td className={`text-${item.status === 'Waiting Approve' ? 'warning' :
-                    item.status === 'Success' ? 'success' :
-                      item.status === 'Cancel' ? 'danger' : 'info'
+                  <td>{item?.buyer?.fullName}</td>
+                  <td>{item?.buyer?.profile?.address}</td>
+                  <td>{item?.buyer?.profile?.post_code}</td>
+                  <td className='text-primary'>{convertRupiah.convert(item?.amount)}</td>
+                  <td className={`text-${item?.status === 'Waiting Approve' ? 'warning' :
+                    item?.status === 'Success' ? 'success' :
+                      item?.status === 'Cancel' ? 'danger' : 'info'
                     }`}>
-                    {item.status}
+                    {item?.status}
                   </td>
                 </tr>
               )

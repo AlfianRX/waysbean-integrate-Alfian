@@ -1,8 +1,8 @@
 package transactiondto
 
 type TransactionResponse struct {
-	ID     int    `json:"id"`
-	Amount int    `json:"amount"`
+	ID     int64  `json:"id"`
+	Total  int    `json:"total"`
 	Status string `json:"status"`
 	UserID int    `json:"user_id"`
 }

@@ -9,8 +9,8 @@ type Product struct {
 	Desc      string         `json:"desc" gorm:"type: varchar(255)"`
 	Stock     int            `json:"stock" gorm:"type: int"`
 	Image     string         `json:"image" gorm:"type: varchar(255)"`
-	UserID    int            `json:"-"`
-	User      UserProfileRel `json:"user"`
+	UserID    int            `json:"user_id" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User      UserProfileRel `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 }

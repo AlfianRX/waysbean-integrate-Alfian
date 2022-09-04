@@ -110,6 +110,7 @@ func (h *handlerCart) CreateCart(w http.ResponseWriter, r *http.Request) {
 		ProductID: request.ProductID,
 		SubTotal:  request.SubTotal,
 		UserID:    userId,
+		Status:    "on",
 	}
 
 	validate := validator.New()
@@ -155,16 +156,71 @@ func (h *handlerCart) UpdateCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.TransactionID > 0 {
-		cart.TransactionID = &request.TransactionID
-	}
-
 	data, err := h.CartRepository.UpdateCart(cart)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerCart) UpdateeCart(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	request := new(cartsdto.UpdateCart)
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	cart, err := h.CartRepository.GetCart(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	if request.Qty != 0 {
+		cart.Qty = request.Qty
+	}
+
+	data, err := h.CartRepository.UpdateeCart(cart)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerCart) DeleteCart(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	cart, err := h.CartRepository.GetCart(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	data, err := h.CartRepository.DeleteCart(cart)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
 	}
 
 	w.WriteHeader(http.StatusOK)

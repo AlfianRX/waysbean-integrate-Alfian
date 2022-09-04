@@ -1,7 +1,7 @@
 package transactiondto
 
 type CreateTransactionRequest struct {
-	Amount int `json:"amount" validate:"required"`
+	Total int `json:"total" validate:"required"`
 }
 
 type UpdateTransactionRequest struct {

@@ -7,5 +7,5 @@ type ProductResponse struct {
 	Desc   string `json:"desc" gorm:"type: varchar(255)"`
 	Stock  int    `json:"stock" gorm:"type: int"`
 	Image  string `json:"image" gorm:"type: varchar(255)"`
-	UserID int    `json:"user_id"`
+	UserID int    `json:"user_id" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
