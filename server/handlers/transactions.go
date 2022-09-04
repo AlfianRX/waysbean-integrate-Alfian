@@ -2,21 +2,27 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 	dto "waysbean_fian/dto/result"
-	transactionsdto "waysbean_fian/dto/transactions"
+	transactiondto "waysbean_fian/dto/transactions"
 	"waysbean_fian/models"
 	"waysbean_fian/repositories"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/gorilla/mux"
 	"github.com/midtrans/midtrans-go"
+	"github.com/midtrans/midtrans-go/coreapi"
 	"github.com/midtrans/midtrans-go/snap"
 )
+
+var c = coreapi.Client{
+	ServerKey: os.Getenv("SERVER_KEY"),
+	ClientKey: os.Getenv("CLIENT_KEY"),
+}
 
 type handlerTransaction struct {
 	TransactionRepository repositories.TransactionRepository
@@ -27,94 +33,106 @@ func HandlerTransaction(TransactionRepository repositories.TransactionRepository
 }
 
 func (h *handlerTransaction) FindTransactions(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 
 	transactions, err := h.TransactionRepository.FindTransactions()
-
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
-		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: http.StatusOK, Data: transactions}
-
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+func (h *handlerTransaction) GetTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content type", "application/json")
 
-	w.Header().Set("Content-Type", "application/json")
-
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	userId := int(userInfo["id"].(float64))
-
-	request := new(transactionsdto.CreateTransactionRequest)
-	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-	fmt.Println(request)
-	validation := validator.New()
-	err := validation.Struct(request)
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	transaction, err := h.TransactionRepository.GetTransaction(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
-		return
 	}
 
-	// var TransIdIsMatch = false
-	// var TransactionId int
-	// for !TransIdIsMatch {
-	// 	TransactionId = userId + rand.Intn(10000) - rand.Intn(100)
-	// 	transactionData, _ := h.TransactionRepository.GetTransaction(TransactionId)
-	// 	if transactionData.ID == 0 {
-	// 		TransIdIsMatch = true
-	// 	}
-	// }
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: transaction}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerTransaction) GetUserTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content type", "application/json")
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	id := int(userInfo["id"].(float64))
+
+	transaction, err := h.TransactionRepository.GetUserTransaction(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: transaction}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	id := int(userInfo["id"].(float64))
+
+	request := new(transactiondto.CreateTransaction)
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	validate := validator.New()
+	err := validate.Struct(request)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusOK, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	cart, err := h.TransactionRepository.FindCartsTransactions(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
 
 	time := time.Now()
 	miliTime := time.Unix()
 
 	transaction := models.Transaction{
 		ID:     miliTime,
+		UserID: id,
 		Total:  request.Total,
-		Status: "Waiting Approve",
-		UserID: userId,
+		Status: "Pending",
+		Cart:   cart,
 	}
 
-	newTransaction, err := h.TransactionRepository.CreateTransaction(transaction)
+	data, err := h.TransactionRepository.CreateTransaction(transaction)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
-		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Status: http.StatusOK, Data: convertTransactionResponse(newTransaction)}
-	json.NewEncoder(w).Encode(response)
-}
-
-func (h *handlerTransaction) GetSnap(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	id := int(userInfo["id"].(float64))
-
-	dataTransactions, err := h.TransactionRepository.GetTransaction(id)
+	dataTransactions, err := h.TransactionRepository.GetTransactions(data.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
+	// Request payment token from midtrans ...
 	// 1. Initiate Snap client
 	var s = snap.Client{}
 	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
@@ -143,6 +161,70 @@ func (h *handlerTransaction) GetSnap(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	request := new(transactiondto.UpdateTransaction)
+	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	transaction, err := h.TransactionRepository.GetTransaction(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	if request.UserID != 0 {
+		transaction.UserID = request.UserID
+	}
+
+	if request.Total != 0 {
+		transaction.Total = request.Total
+	}
+
+	if request.Status != "" {
+		transaction.Status = request.Status
+	}
+
+	data, err := h.TransactionRepository.UpdateTransaction(transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Status: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h handlerTransaction) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Contetmt-type", "application/json")
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	transaction, err := h.TransactionRepository.GetTransaction(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	data, err := h.TransactionRepository.DeleteTransaction(transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Status: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
+
 func (h *handlerTransaction) Notification(w http.ResponseWriter, r *http.Request) {
 	var notificationPayload map[string]interface{}
 
@@ -162,34 +244,29 @@ func (h *handlerTransaction) Notification(w http.ResponseWriter, r *http.Request
 		if fraudStatus == "challenge" {
 			// TODO set transaction status on your database to 'challenge'
 			// e.g: 'Payment status challenged. Please take action on your Merchant Administration Portal
-			h.TransactionRepository.UpdateTransaction("Waiting Approve", orderId)
+			h.TransactionRepository.UpdateTransactions("pending", orderId)
 		} else if fraudStatus == "accept" {
 			// TODO set transaction status on your database to 'success'
-			h.TransactionRepository.UpdateTransaction("Success", orderId)
+
+			h.TransactionRepository.UpdateTransactions("success", orderId)
 		}
 	} else if transactionStatus == "settlement" {
 		// TODO set transaction status on your databaase to 'success'
-		h.TransactionRepository.UpdateTransaction("Success", orderId)
+
+		h.TransactionRepository.UpdateTransactions("success", orderId)
 	} else if transactionStatus == "deny" {
 		// TODO you can ignore 'deny', because most of the time it allows payment retries
 		// and later can become success
-		h.TransactionRepository.UpdateTransaction("Failed", orderId)
+
+		h.TransactionRepository.UpdateTransactions("failed", orderId)
 	} else if transactionStatus == "cancel" || transactionStatus == "expire" {
 		// TODO set transaction status on your databaase to 'failure'
-		h.TransactionRepository.UpdateTransaction("Canceled", orderId)
+
+		h.TransactionRepository.UpdateTransactions("failed", orderId)
 	} else if transactionStatus == "pending" {
 		// TODO set transaction status on your databaase to 'pending' / waiting payment
-		h.TransactionRepository.UpdateTransaction("Waiting Approve", orderId)
+		h.TransactionRepository.UpdateTransactions("pending", orderId)
 	}
 
 	w.WriteHeader(http.StatusOK)
-}
-
-func convertTransactionResponse(u models.Transaction) transactionsdto.TransactionResponse {
-	return transactionsdto.TransactionResponse{
-		ID:     u.ID,
-		Total:  u.Total,
-		Status: u.Status,
-		UserID: u.UserID,
-	}
 }

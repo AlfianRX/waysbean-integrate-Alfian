@@ -24,9 +24,9 @@ require (
 	golang.org/x/text v0.3.7
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/gorm v1.23.8
+	github.com/midtrans/midtrans-go v1.3.4
 )
 
 require (
 	github.com/cloudinary/cloudinary-go v1.7.0 // indirect
-	github.com/midtrans/midtrans-go v1.3.4 // indirect
 )

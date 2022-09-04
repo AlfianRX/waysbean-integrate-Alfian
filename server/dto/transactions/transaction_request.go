@@ -1,11 +1,11 @@
 package transactiondto
 
-type CreateTransactionRequest struct {
-	Total int `json:"total" validate:"required"`
+type CreateTransaction struct {
+	Total int `json:"total"`
 }
 
-type UpdateTransactionRequest struct {
-	Amount int    `json:"amount"`
+type UpdateTransaction struct {
+	UserID int    `json:"user_id" form:"user_id"`
 	Status string `json:"status"`
-	UserID int    `json:"user_id"`
+	Total  int    `json:"total"`
 }

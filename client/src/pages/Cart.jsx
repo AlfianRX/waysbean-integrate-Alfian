@@ -14,8 +14,6 @@ import { useMutation } from 'react-query'
 function Cart() {
 
   const navigate = useNavigate();
-
-  const [state] = useContext(UserContext)
   const [productsID, setProductsID] = useState([])
  
   const [show, setShow] = useState(false); // modal result
@@ -95,53 +93,12 @@ function Cart() {
 
    
  
-// transaction
- const handleOnSubmit = useMutation(async (e) => {
-  try {
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-    const form = {
-      total: resultTotal,
-    };
-    const body = JSON.stringify(form);
-    const response = await API.post("/transaction", body, config);
-    const idTrans = response.data.data.id
-    console.log(idTrans);
-
-    const snap = await API.get(`/snap/${idTrans}`)
-    const token = snap.data.data.token;
-
-    window.snap.pay(token, {
-      onSuccess: function (result) {
-        console.log(result);
-        navigate("/profile");
-      },
-      onPending: function (result) {
-        console.log(result);
-        navigate("/profile");
-      },
-      onError: function (result) {
-        console.log(result);
-      },
-      onClose: function () {
-        alert("you closed the popup without finishing the payment");
-      },
-    });
-    await API.patch("/cart", body, config)
-
-  } catch (error) {
-    console.log(error);
-  }
- });
-
- useEffect(() => {
+// pay midtrans
+useEffect(() => {
   //change this to the script source you want to load, for example this is snap.js sandbox env
   const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
   //change this according to your client-key
-  const myMidtransClientKey = process.env.REACT_APP_MIDTRANS_CLIENT_KEY;
+  const myMidtransClientKey = "-";
 
   let scriptTag = document.createElement("script");
   scriptTag.src = midtransScriptUrl;
@@ -154,6 +111,40 @@ function Cart() {
     document.body.removeChild(scriptTag);
   };
 }, []);
+
+// handlebuy
+
+const form = {
+  total: resultTotal,
+};
+const handleSubmit = useMutation(async (e) => {
+  const config = {
+    headers: {
+      "Content-type": "application/json",
+    },
+  };
+  const body = JSON.stringify(form);
+  const response = await API.post("/transaction", body, config);
+  const token = response.data.data.token;
+
+  window.snap.pay(token, {
+    onSuccess: function (result) {
+      console.log(result);
+      navigate("/profile");
+    },
+    onPending: function (result) {
+      console.log(result);
+      navigate("/profile");
+    },
+    onError: function (result) {
+      console.log(result);
+    },
+    onClose: function () {
+      alert("you closed the popup without finishing the payment");
+    },
+  });
+  await API.patch("/cart", body, config);
+});
 
   return (
     <div className='container d-flex justify-content-center'>
@@ -228,7 +219,7 @@ function Cart() {
 
             <div className="d-grid gap-2 mt-5">
               <button className="btn btn-red" 
-              type="button" onClick={handleShowAddress}>
+              type="button" onClick={(e) => handleSubmit.mutate(e)}>
                 Checkout</button>
             </div>
 
@@ -253,7 +244,7 @@ function Cart() {
                   style={{
                     width: "100%",
                   }}
-                  onClick={(e) => handleOnSubmit.mutate(e)}>
+                  >
                   Pay
                 </button>
                   </div>}

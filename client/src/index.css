@@ -311,3 +311,173 @@ div.thanks-message{
   justify-content: space-between;
   align-items: center;
 }
+
+/* profileCard */
+
+.profileCard{
+  display: flex;
+  flex-direction: row;
+  width: 650px;
+  background-color: #F6E6DA;
+  border-radius: 5px;
+  justify-content: space-between;
+  padding: 20px 30px 0px 30px;
+}
+
+.contentCardLeft{
+  display: flex;
+  flex-direction: column;
+}
+
+.mapContent{
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+
+.contentCardLeft ul li{
+  list-style: none;
+}
+
+.contentCardLeft img{
+  width: 100px;
+  height: 120px;
+  border-radius: 10px;
+}
+
+.profileCardTitle{
+  font-size: 20px;
+  font-weight: 700;
+  color: #BD0707;
+  margin-top: -2px;
+}
+
+.profileCardDate{
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #BD0707;
+  font-weight: 500;
+}
+.profileCardDate strong{
+  font-weight: 700;
+}
+
+.profileCardToping strong{
+  color: #974A4A;
+}
+
+.profileCardToping{
+  font-size: 14px;
+  color: #BD0707;
+  margin-bottom: 7px;
+}
+
+.profileCardPrice{
+  font-size: 14px;
+  color: #974A4A;
+}
+
+
+.contentCardRight img{
+  display: block ;
+  width: 140px;
+  height: 70px;
+  margin-left: 20px;
+  margin-bottom: 6px;
+}
+
+.contentCardRight{
+  justify-content: center;
+  text-align: center;
+}
+
+.Otw span {
+  margin-top: 20px;
+  display: block;
+  background: #613D2B;
+}
+
+.Cancel span {
+  margin-top: 20px;
+  display: block;
+  background: #bd07075f;
+}
+
+.Success span {
+  margin-top: 20px;
+  display: block;
+  background: #78a85a51;
+}
+
+.Otw span p{
+  color: white;
+  font-weight: 600;
+}
+
+.Cancel span p{
+  color: #BD0707;
+  font-weight: 600;
+}
+
+.Success span p{
+  color: #78A85A;
+  font-weight: 600;
+}
+
+.profileSubTotal {
+  font-size: 15px;
+  font-weight: 700;
+  color: #974A4A;
+}
+
+.tableContainer h1{
+  margin-bottom: 40px;
+  color: #613D2B;
+  font-weight: 900;
+
+}
+
+.tablePrice{
+  color: #061E99;
+  font-weight: 600;
+}
+
+.tableSuccess{
+  color: #78A85A;
+  font-weight: 600;
+}
+.tableSuccess:hover{
+  color: #78A85A;
+  font-weight: 600;
+}
+
+.tableWaiting{
+  color: #FF9900;
+  font-weight: 600;
+}
+
+.tableWaiting:hover{
+  color: #FF9900;
+  font-weight: 600;
+}
+
+.tableOtw{
+  color: #00D1FF;
+  font-weight: 600;
+}
+
+.tableOtw:hover{
+  color: #00D1FF;
+  font-weight: 600;
+}
+
+.tableCancel{
+  color: #E83939;
+  font-weight: 600;
+}
+
+.tableCancel:hover{
+  color: #E83939;
+  font-weight: 600;
+}

@@ -73,8 +73,11 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 
+	img := "https://res.cloudinary.com/alfiancloud/image/upload/v1662327261/waysbean/424-4242242_say-hello-to-gitrob-gopher-golang-mascot-hd_pfqicz.png"
+
 	profile := models.Profile{
 		UserID: data.ID,
+		Image:  img,
 	}
 
 	//. create nil profile column

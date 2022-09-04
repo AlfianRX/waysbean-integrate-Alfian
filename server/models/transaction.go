@@ -16,20 +16,11 @@ type Transaction struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"-"`
 }
 
-type TransactionCartRel struct {
+type TransactionResponse struct {
 	ID     int64 `json:"id"`
-	UserId int   `json:"user_id"`
-	Amount int   `json:"amount"`
+	UserID int   `json:"user_id"`
 }
 
-type TransactionUserRel struct {
-	ID     int64 `json:"id"`
-	UserId int   `json:"user_id"`
-}
-
-func (TransactionCartRel) TableName() string {
-	return "transactions"
-}
-func (TransactionUserRel) TableName() string {
+func (TransactionResponse) TableName() string {
 	return "transactions"
 }
