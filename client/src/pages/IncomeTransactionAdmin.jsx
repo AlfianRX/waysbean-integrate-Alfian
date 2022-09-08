@@ -5,6 +5,8 @@ import { useQuery } from 'react-query'
 import { Table, Container } from 'react-bootstrap'
 import { useState } from 'react'
 import { Navbar } from '../components'
+import { useContext } from 'react'
+import { UserContext } from '../context/userContext'
 
 
 function IncomeTransactionAdmin() {
@@ -16,6 +18,7 @@ function IncomeTransactionAdmin() {
     setIdOrder(id);
     setShowTrans(true);
   };
+
   const handleClose = () => setShowTrans(false);
 
   let { data: transactions } = useQuery("transactionsCache", async () => {
@@ -28,10 +31,10 @@ function IncomeTransactionAdmin() {
     <>
       <Navbar />
       <Container className='mb-5' style={{ marginTop: 120 }}>
-        <h1>Income Transaction</h1>
-        <div>
-          <Table hover bordered size="lg" variant="light">
-            <thead>
+        <h1 className='text-red'>Income Transaction</h1>
+        <div className='mt-5'>
+          <Table bordered hover size="lg" >
+            <thead className='tablehead'>
               <tr>
                 <th>No</th>
                 <th>Name</th>
@@ -46,8 +49,8 @@ function IncomeTransactionAdmin() {
                 <tr onClick={() => handleShow(item.id)} key={index}>
                   <td>{index + 1}</td>
                   <td>{item?.user?.fullName}</td>
-                  <td>{item?.user?.address}</td>
-                  <td>{item?.user?.postCode}</td>
+                  <td>{item?.user?.profile?.address}</td>
+                  <td>{item?.user?.profile?.post_code}</td>
                   <td className="tablePrice">{Rupiah.convert(item?.total)}</td>
                   <td
                     className={

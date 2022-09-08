@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { API, setAuthToken } from "./config/api";
 import { PrivateRoute } from './components'
 import { UserContext } from "./context/userContext";
-import { Home, AddProductAdmin, ProductList, UpdateProduct, Cart, DetailProduct, IncomeTransactionAdmin, Profile } from './pages'
+import { Home, AddProductAdmin, ProductList, UpdateProduct, Cart, DetailProduct, IncomeTransactionAdmin, Profile, UpdateProfile,} from './pages'
 
 function App() {
 
@@ -55,6 +55,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/detail-product/:id" element={<DetailProduct />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-update/:id" element={<UpdateProfile/>}/>
         </Route>
       </Routes>
   );

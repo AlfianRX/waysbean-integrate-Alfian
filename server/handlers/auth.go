@@ -73,11 +73,14 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 
-	img := "https://res.cloudinary.com/alfiancloud/image/upload/v1662327261/waysbean/424-4242242_say-hello-to-gitrob-gopher-golang-mascot-hd_pfqicz.png"
+	img := "https://res.cloudinary.com/alfiancloud/image/upload/v1662556664/waysbean/placeholder-face-big_j7doac.png"
 
 	profile := models.Profile{
-		UserID: data.ID,
-		Image:  img,
+		UserID:   data.ID,
+		Image:    img,
+		Phone:    "-",
+		Address:  "-",
+		PostCode: "-",
 	}
 
 	//. create nil profile column
@@ -166,8 +169,8 @@ func (h *handlerAuth) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	user.Profile.Image = os.Getenv("PATH_FILE") + user.Profile.Image
 
-	CheckAuthResponse := authdto.CheckAuthResponse{
-		Id:       user.ID,
+	logimResponse := authdto.LoginResponse{
+		ID:       user.ID,
 		FullName: user.FullName,
 		Email:    user.Email,
 		Status:   user.Status,
@@ -175,6 +178,6 @@ func (h *handlerAuth) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Status: http.StatusOK, Data: CheckAuthResponse}
+	response := dto.SuccessResult{Status: http.StatusOK, Data: logimResponse}
 	json.NewEncoder(w).Encode(response)
 }

@@ -1,5 +1,5 @@
 import { React, useContext } from "react"
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { UserContext } from "../context/userContext"
 
@@ -12,9 +12,8 @@ import { API } from "../config/api"
 
 function Navbar() {
 
-  
-
   const [state, dispatch] = useContext(UserContext);
+  const { id } = useParams()
 
   let { data: cartData } = useQuery('cartUserIdCache', async () => {
     const response = await API.get('/carts-userid');
@@ -58,21 +57,25 @@ function Navbar() {
                     <div role="button" className="rounded-circle nav-photo ms-3" data-bs-toggle="dropdown" aria-expanded="false" style={{ backgroundImage: `url(${state.user.profile.image})` }}>
                     </div>
                     <div className="dropdown-menu">
-                      <div className="menu-drop" style={{ width: 300 }}>
+                      <div className="menu-drop" >
                         <div>
-                          <Link to='/add-product' className="d-flex align-items-center p-3">
-                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662225694/waysbean/qxeof7sumr8obxopnhzs.png'} alt="profile icon" />
-                            <p className="ms-3">Add Product</p>
+                          <Link to='/add-product' className="d-flex align-items-center p-2">
+                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662225694/waysbean/qxeof7sumr8obxopnhzs.png'} 
+                            style={{ width: 20 }}
+                            alt="profile icon" />
+                            <p className="ms-3 fs-5">Add Product</p>
                           </Link>
                           <Link to='/product-list' className="d-flex align-items-center p-3">
-                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662225694/waysbean/qxeof7sumr8obxopnhzs.png'} alt="profile icon" />
-                            <p className="ms-3">List Product</p>
+                            <img src={'https://res.cloudinary.com/alfiancloud/image/upload/v1662225694/waysbean/qxeof7sumr8obxopnhzs.png'} 
+                            style={{ width: 20 }}
+                            alt="profile icon" />
+                            <p className="ms-3 fs-5">List Product</p>
                           </Link>
                         </div>
 
                         <span className="d-flex align-items-center p-3">
-                          <img src={logoutIcon} alt="logout icon" />
-                          <p className="ms-3 cursor-pointer" onClick={logout}>Logout</p>
+                          <img src={logoutIcon} style={{ width: 20 }} alt="logout icon" />
+                          <p className="ms-3 cursor-pointer fs-5" onClick={logout}>Logout</p>
                         </span>
 
                       </div>

@@ -15,5 +15,7 @@ func ProfileRoutes(r *mux.Router) {
 
 	r.HandleFunc("/profiles", h.FindProfiles).Methods("GET")
 	r.HandleFunc("/profile/{id}", h.GetProfile).Methods("GET")
+	r.HandleFunc("/profile-update/{id}", middleware.Auth(middleware.UploadFile(h.UpdateProfile))).Methods("PATCH")
+	r.HandleFunc("/profileimage/{id}", middleware.Auth(h.GetProfileImage)).Methods("GET")
 	r.HandleFunc("/profile", middleware.Auth(middleware.UploadFile(h.CreateProfile))).Methods("POST")
 }

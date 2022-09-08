@@ -38,6 +38,6 @@ func main() {
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
 	// fmt.Println("server running localhost:" + port)
-	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	http.ListenAndServe("localhost:"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 
 }

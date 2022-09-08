@@ -6,5 +6,6 @@ import DetailProduct from "./DetailProduct";
 import IncomeTransactionAdmin from "./IncomeTransactionAdmin";
 import Profile from "./Profile";
 import UpdateProduct from "./UpdateProduct";
+import UpdateProfile from "./ProfileUpdate";
 
-export { Home, AddProductAdmin, ProductList, Cart, DetailProduct, IncomeTransactionAdmin, Profile, UpdateProduct }
+export { Home, AddProductAdmin, ProductList, Cart, DetailProduct, IncomeTransactionAdmin, Profile, UpdateProduct, UpdateProfile }

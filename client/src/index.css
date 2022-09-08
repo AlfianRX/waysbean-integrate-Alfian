@@ -349,14 +349,14 @@ div.thanks-message{
 .profileCardTitle{
   font-size: 20px;
   font-weight: 700;
-  color: #BD0707;
+  color: #613D2B;
   margin-top: -2px;
 }
 
 .profileCardDate{
   font-size: 14px;
   margin-bottom: 10px;
-  color: #BD0707;
+  color: #613D2B;
   font-weight: 500;
 }
 .profileCardDate strong{
@@ -369,7 +369,7 @@ div.thanks-message{
 
 .profileCardToping{
   font-size: 14px;
-  color: #BD0707;
+  color: #613D2B;
   margin-bottom: 7px;
 }
 
@@ -480,4 +480,30 @@ div.thanks-message{
 .tableCancel:hover{
   color: #E83939;
   font-weight: 600;
+}
+
+.overflowTrans{
+  background: #ffffff;
+  color: white;
+  padding: 15px;
+  width: 45rem;
+  height: 25rem;
+  overflow: hidden visible;
+  
+}
+
+.nildata{
+  width: 70%;
+  border-radius: 10px;
+  margin-left: 60px;
+  margin-bottom: 15px;
+}
+.nilbtn{
+  border-radius: 10px;
+  margin-left: 55px;
+}
+
+.tablehead{
+  background-color: #a37e6b;
+  color:white
 }

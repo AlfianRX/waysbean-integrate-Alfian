@@ -107,7 +107,7 @@ function AuthModal() {
     } catch (error) {
       const alert = (
         <div className="alert alert-danger" role="alert">
-          Register failed, {error.response.data.message}
+          Register failed, {error.message}
         </div>
       );
       setMessage(alert);
@@ -150,7 +150,7 @@ function AuthModal() {
           <div className="modal-content">
             <div className="modal-body">
               <h1 className="modal-title text-red bold mb-4" id="register">Register</h1>
-
+              {message && message}
               <form id="register" onSubmit={(e) => handleSubmitRegister.mutate(e)} >
                 <div className="mb-3">
                   <input type="text" onChange={handleChangeRegister} className="form-control input-red" id="registerName" value={registerName} name="registerName" placeholder="Full Name" />

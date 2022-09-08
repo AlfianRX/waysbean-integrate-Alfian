@@ -14,8 +14,7 @@ import { useMutation } from 'react-query'
 function Cart() {
 
   const navigate = useNavigate();
-  const [productsID, setProductsID] = useState([])
- 
+   
   const [show, setShow] = useState(false); // modal result
   const [showAddress, setShowAddress] = useState(false); // modal pay
 
@@ -27,6 +26,9 @@ function Cart() {
     return response.data.data;
   });
 
+  const handleClick = () => {
+    navigate("/")
+  }
   //arithmatic
   let resultTotal = cart?.reduce((a, b) =>{
     return a + b.qty * b.subtotal;
@@ -152,6 +154,7 @@ const handleSubmit = useMutation(async (e) => {
       <div className='text-red' style={{ marginTop: 120, width: '90%' }}>
 
         <h3 >My Cart</h3>
+        {cart?.length !== 0 ?(
         <div className='row justify-content-between'>
           <p>Review Your Order</p>
           <div className='col-7 '>
@@ -225,6 +228,18 @@ const handleSubmit = useMutation(async (e) => {
 
           </div>
         </div>
+        ) : (
+          
+            <div className='position-absolute top-50 start-50 translate-middle'>
+                <img src={"https://res.cloudinary.com/alfiancloud/image/upload/v1662555859/waysbean/image_processing20210614-29082-1jfipct_vtubtu.jpg"}
+                alt={'Transaction 0'} style={{width:"250px"}}/>
+                <h5 className='nildata text-red'>Cart is Empty</h5>              
+                <button className='btn btn-red nilbtn'
+                onClick={handleClick}
+                >Browse Product</button>
+            </div>
+         
+        )}
       </div>
 
       <ModalCart showTrans={show} close={handleClose} />

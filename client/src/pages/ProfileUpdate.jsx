@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useMutation } from 'react-query';
 import { API } from '../config/api';
 import clip from './../assets/img/clip.png'
@@ -6,59 +6,58 @@ import { Navbar } from "../components";
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { UserContext } from '../context/userContext';
 
-function UpdateProduct() {
+function UpdateProfile() {
 
   const [preview, setPreview] = useState(null);
   const [previewName, setPreviewName] = useState("");
-  const [product, setProduct] = useState({});
-  const [dataProduct, setDataproduct] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [dataProfile, setDataprofile] = useState([]);
 
   let navigate = useNavigate();
   
   const { id } = useParams()
 
-  console.log(dataProduct);
   const [form, setForm] = useState({
-    title: '',
-    price: '',
-    stock: '',
-    desc: '',
+    phone: '',
+    address: '',
+    post_code: '',
     image: '',
   });
 
   useEffect(() => {
-    const dataProduct = async () => {
+    const dataProfile = async () => {
       try {
-        let response = await API.get("/product/" + id);
+        let response = await API.get("/profile/" + id);
         setForm({
-          title: response.data.data.title,
-          price: response.data.data.price,
-          stock: response.data.data.stock,
-          desc: response.data.data.desc,
+          phone: response.data.data.phone,
+          address: response.data.data.address,
+          post_code: response.data.data.post_code,
           image: response.data.data.image,
         });
-        console.log(response);
-        setDataproduct(response.data.data.image)
+        
+        setDataprofile(response.data.data)
       } catch (error) {
         console.log(error);
       }
     };
-    dataProduct();
+    dataProfile();
   }, [id]);
 
-  useEffect(() => {
-    const dataProduct = async () => {
-      try {
-        const response = await API.get("/productimage/" + id);
+   useEffect(() => {
+     const dataProfile = async () => {
+       try {
+         const response = await API.get("/profileimage/" + id);
 
-        setProduct(response.data)
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    dataProduct();
-  }, [id]);
+         setProfile(response.data.image)
+         console.log(response.data);
+       } catch (error) {
+         console.log(error);
+       }
+     };
+     dataProfile();
+   }, [id]);
 
   const handleChange = (e) => {
     setForm(({
@@ -88,17 +87,16 @@ function UpdateProduct() {
       const formData = new FormData();
 
       if (form.image) {
-        formData.set('image', form?.image[0], form?.image[0]?.name);
+        formData.set('image', form?.image[0], form?.image[0].name);
       }
-      formData.set('title', form.title);
-      formData.set('price', form.price);
-      formData.set('stock', form.stock);
-      formData.set('desc', form.desc);
+      formData.set('phone', form.phone);
+      formData.set('address', form.address);
+      formData.set('post_code', form.post_code);
 
-      await API.patch("/product-update/" + id, formData, config);
+      await API.patch("/profile-update/" + id, formData, config);
      
-      alert("UPDATE product success");
-      navigate("/")
+      alert("UPDATE Profile Success");
+      navigate("/profile")
     } catch (error) {
       console.log(error);
     }
@@ -111,16 +109,15 @@ function UpdateProduct() {
       <div className='row justify-content-between' style={{ marginTop: 120, width: '90%' }}>
       <div className='col-6'>
 
-        <h2 className='text-red mb-4'>Update Product</h2>
+        <h2 className='text-red mb-4'>Update Your Profile</h2>
         <form onSubmit={(e) => handleOnSubmit.mutate(e)}>
-          <input className="form-control input-red mb-4" type="text" name='title' onChange={handleChange} placeholder={`Name Product`} value={form.title} aria-label="default input example" />
-          <input className="form-control input-red mb-4" type="number" name='stock' placeholder="Stock" onChange={handleChange} value={form.stock} aria-label="default input example" />
-          <input className="form-control input-red mb-4" type="number" name='price' placeholder="Price" onChange={handleChange} value={form.price} aria-label="default input example" />
-          <textarea className="form-control input-red mb-4" type="text" name='desc' placeholder="Desc" onChange={handleChange} value={form.desc} aria-label="default input example" />
+          <input className="form-control input-red mb-4" type="text" name='phone' onChange={handleChange} placeholder={`Phone Number`} value={form.phone} aria-label="default input example" />
+          <input className="form-control input-red mb-4" type="text" name='address' placeholder="Address" onChange={handleChange} value={form.address} aria-label="default input example" />
+          <input className="form-control input-red mb-4" type="text" name='post_code' placeholder="Post Code" onChange={handleChange} value={form.post_code} aria-label="default input example" />
           <div className="mb-5">
             <input type="file" name='image' className="form-control input-file-red" id="inputGroupFile02" onChange={handleChange}/>
             <label className="form-control label-file" htmlFor="inputGroupFile02">
-              <p className='m-0'> {previewName === "" ? "Change Picture" : previewName}</p>
+              <p className='m-0'> {previewName === "" ? "Photo Profile" : previewName}</p>
               <img style={{ height: 20 }} src={clip} alt="clip" />
             </label>
           </div>
@@ -130,7 +127,7 @@ function UpdateProduct() {
         </form>
       </div>
       <div className='col-5 mt-9' style={{marginTop:"60px"}} >
-        <img style={{ height: 300, width: 200}} src={preview || form.image} alt="Update Product" />
+        <img style={{ height: 300, width: 200}} src={preview || form.image} alt="Update Profile" />
       </div>
     </div >
 
@@ -138,4 +135,4 @@ function UpdateProduct() {
   )
 }
 
-export default UpdateProduct
+export default UpdateProfile

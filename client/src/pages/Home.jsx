@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import convertRupiah from 'rupiah-format'
-import { useQuery } from 'react-query'
 import { AuthModal, Navbar } from '../components'
 
 import heroBg from './../assets/img/hero-bg.png'
@@ -9,17 +8,31 @@ import heroImg from './../assets/img/beans.png'
 import iconimg from './../assets/img/waysbean_icon.png'
 import { API } from '../config/api'
 import { UserContext } from '../context/userContext'
+import { useState } from 'react'
+import { useEffect } from 'react'
 
 function Home() {
 
   const [state] = useContext(UserContext)
   const navigate = useNavigate()
+  const [dataProducts, setDataproducts] = useState([])
+  const [order, setOrder] = useState("ASC")
+    
 
   //. Fetching product data from database
-  let { data: products } = useQuery('productsCache', async () => {
-    const response = await API.get('/products');
-    return response.data.data
-  });
+ useEffect(() => {
+  const dataProducts = async () => {
+    try {
+      const response = await API.get("/products");
+      setDataproducts(response.data.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  dataProducts();
+ },[])
+
+ console.log(dataProducts);
 
   const detailProduct = (productId) => {
     const loginButton = document.getElementById("loginButton")
@@ -29,6 +42,37 @@ function Home() {
       loginButton.click()
     }
   }
+
+  const sorting = (e) => {
+    if (order === "ASC"){
+      const sorted = [...dataProducts].sort((a, b) =>
+      a[e].toLowerCase() > b[e].toLowerCase() ? 1 : -1)
+      setDataproducts(sorted)
+      setOrder("DSC")
+    }
+    if (order === "DSC"){
+      const sorted = [...dataProducts].sort((a, b) =>
+      a[e].toLowerCase() < b[e].toLowerCase() ? 1 : -1)
+      setDataproducts(sorted)
+      setOrder("ASC")
+    }
+  }
+  
+  const sortingInt = (e) => {
+    if (order === "ASC"){
+      const sorted = [...dataProducts].sort((a, b) =>
+      a[e] > b[e] ? 1 : -1)
+      setDataproducts(sorted)
+      setOrder("DSC")
+    }
+    if (order === "DSC"){
+      const sorted = [...dataProducts].sort((a, b) =>
+      a[e] < b[e] ? 1 : -1)
+      setDataproducts(sorted)
+      setOrder("ASC")
+    }
+  }
+  
   return (
     <div className='container'>
       <Navbar />
@@ -49,9 +93,23 @@ function Home() {
         </div>
       </header>
       <main className='mx-auto text-red' style={{ width: '92%' }}>
-        <h4 className='mb-5'>The Real Smell of Coffee</h4>
+        
+        <div className='mb-5'>
+          <h4 className='mb-3'>The Real Smell of Coffee</h4>
+          {/* sorting button */}
+          <div className="btn-group dropend">
+            <button className="btn btn-red dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+              Sort Product
+            </button>
+            <ul className="dropdown-menu border" aria-labelledby="dropdownMenuButton1">
+              <li><a className="dropdown-item" onClick={()=>sorting("title")}>by Name</a></li>
+              <li><a className="dropdown-item" onClick={()=>sortingInt("price")}>by Price</a></li>
+            </ul>
+          </div>
+        </div>
+
         <div className='row'>
-          {products?.map((item) => {
+          {dataProducts?.map((item) => {
             return (
               <div key={item.id} className='col-3 mb-5 px-3'>
                 <div className='card bg-pink p-0 cursor-pointer' onClick={() => detailProduct(item.id)}>
